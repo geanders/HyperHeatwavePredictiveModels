@@ -364,21 +364,8 @@ head(proj_pops)</code></pre>
 <h3>Generating predictions from the models</h3>
 <p>To have access to prediction methods for the three models, it is necessary to load the following three R packages:</p>
 <pre class="r"><code>library(tree)
-library(randomForest)</code></pre>
-<pre><code>## randomForest 4.6-10
-## Type rfNews() to see new features/changes/bug fixes.
-## 
-## Attaching package: 'randomForest'
-## 
-## The following object is masked from 'package:dplyr':
-## 
-##     combine</code></pre>
-<pre class="r"><code>library(gbm)</code></pre>
-<pre><code>## Loading required package: survival
-## Loading required package: lattice
-## Loading required package: splines
-## Loading required package: parallel
-## Loaded gbm 2.1.1</code></pre>
+library(randomForest)
+library(gbm)</code></pre>
 <p>For all three models, the <code>predict</code> function can be used to use the model to predict outcomes for a new dataset, in this case the heatwave dataset <code>proj_hws</code>:</p>
 <pre class="r"><code>projs_tree &lt;- predict(unpr.tree.rose,
                       newdata = proj_hws, 
@@ -409,7 +396,15 @@ head(projs_boost)</code></pre>
 <div id="estimating-hyper-heatwave-frequency-from-the-predictions" class="section level3">
 <h3>Estimating hyper-heatwave frequency from the predictions</h3>
 <p>The following equations can be used to estimate the total number of hyper-heatwaves projected within a dataset of heatwaves:</p>
-<p>…</p>
+<p><span class="math">\[ H_{h} = H_{ph} * P + H_{pl} * F \]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math">\(H_{h}\)</span> is the estimated number of hyper-heatwaves</li>
+<li><span class="math">\(H_{ph}\)</span> is the number of heatwaves predicted by the model to be hyper-heatwaves</li>
+<li><span class="math">\(P\)</span> is the model’s estimated precision</li>
+<li><span class="math">\(H_{pl}\)</span> is the number of heatwaves predicted by the model to be less dangerous heatwaves</li>
+<li><span class="math">\(F\)</span> is the model’s estimated false precision rate</li>
+</ul>
 <p>This equation takes the total number of heatwaves predicted by the model to belong to each class and adjusts these values by estimates of the model’s precision and false omission rates.</p>
 <p>The equation requires estimates of the precision and false omission rates. We estimated these for each of the three models using Monte Carlo cross-validation (for more details, see our paper describing the development of these models). These are our estimates for these values for the three models:</p>
 <table>
@@ -439,17 +434,63 @@ head(projs_boost)</code></pre>
 </tbody>
 </table>
 <p>Here is an example of how to apply this equation to projections from the bagging model. First, a vector is created that has the adjustment rates (false omission rates and precision rates).</p>
-<pre class="r"><code>adjustment_rates &lt;- c(0.0, 2.6)
-names(adjustment_rates) &lt;- c(&quot;false_omission&quot;, &quot;precision&quot;)
+<pre class="r"><code>adjustment_rates &lt;- c(0.0, 2.6) / 100
 
 unadj_counts &lt;- table(projs_bag)
 unadj_counts</code></pre>
 <pre><code>## projs_bag
 ## other  very 
 ## 10719  1836</code></pre>
-<pre class="r"><code>sum(unadj_counts * adjustment_rates / 100)</code></pre>
+<pre class="r"><code>sum(unadj_counts * adjustment_rates)</code></pre>
 <pre><code>## [1] 47.736</code></pre>
-<p>Based on this calculation, our projection for this set of scenarios is that we would expect around 48 hyper-heatwaves in the 82 study communities for 2061–2080.</p>
+<p>Based on this calculation, our projection for this set of scenarios is that we would expect around 0 hyper-heatwaves in the 82 study communities for 2061–2080.</p>
+</div>
+<div id="estimating-hyper-heatwave-frequency-from-the-predictions-1" class="section level3">
+<h3>Estimating hyper-heatwave frequency from the predictions</h3>
+<p>Exposure to hyper-heatwaves combines both the frequency of such heatwaves with projections of how long they will last and how many people will be living in the affected community. The following equation can be used to project hyper-heatwave exposure using the predictions from our health-based models:</p>
+<p><span class="math">\[ E_{h} = P\sum_{i}(D_{i}N_{i}) + F\sum_{j}(D_{j}N_{j}) \]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math">\(E_{h}\)</span> is the estimated exposure to hyper-heatwaves, in person-days</li>
+<li><span class="math">\(P\)</span> is the model’s estimated precision</li>
+<li><span class="math">\(i\)</span> indexes across all heatwaves classified as hyper-heatwaves by the predictive model</li>
+<li><span class="math">\(D_{i}\)</span> is the length of heatwave <span class="math">\(i\)</span> in days</li>
+<li><span class="math">\(N_{i}\)</span> is the population of the community in which heatwave <span class="math">\(i\)</span> occurs</li>
+<li><span class="math">\(F\)</span> is the model’s estimated false omission rate</li>
+<li><span class="math">\(j\)</span> indexes across all heatwaves classified as less dangerous heatwaves by the predictive model</li>
+<li><span class="math">\(D_{j}\)</span> is the length of heatwave <span class="math">\(j\)</span> in days</li>
+<li><span class="math">\(N_{j}\)</span> is the population of the community in which heatwave <span class="math">\(j\)</span> occurs</li>
+</ul>
+<p>The following code gives an example of how exposure to hyper-heatwaves could be estimated in R based on <code>projs_bag</code>, the results from applying the predictive bagging model to the projected heatwave data.</p>
+<p>First, it’s necessary to combine the model predictions with data from the original heatwave dataset on heatwave length and population of the community in which the heatwave occurred:</p>
+<pre class="r"><code>exp_projs &lt;- data.frame(prediction = projs_bag,
+                        length = proj_hws$length,
+                        pop = proj_hws$pop100)
+exp_projs[sample(1:nrow(exp_projs), 6), ]</code></pre>
+<pre><code>##       prediction length     pop
+## 11812      other      3  971715
+## 1935       other      9 6370140
+## 8326       other      2 1251723
+## 9894       other      8  819890
+## 2775       other      9  686807
+## 3541       other      2  400951</code></pre>
+<p>Now this dataframe can be used to calculate the person-days of exposure for each heatwave and sum this exposure by predicted class of heatwave:</p>
+<pre class="r"><code>exp_projs &lt;- mutate(exp_projs, exposure = length * pop) %&gt;%
+        group_by(prediction) %&gt;%
+        summarise(exposure = sum(exposure))
+exp_projs</code></pre>
+<pre><code>## Source: local data frame [2 x 2]
+## 
+##   prediction     exposure
+## 1      other 106250642249
+## 2       very  42858657528</code></pre>
+<p>Now the estimated exposure can be calculated by adjusting these two values for the model’s estimated precision and false omission rates (saved in earlier code as <code>adjustment_rates</code>):</p>
+<pre class="r"><code>sum(exp_projs$exposure * adjustment_rates)</code></pre>
+<pre><code>## [1] 1114325096</code></pre>
+<p>This number can also be presented in units of millions of person-days per year (the example dataset covers 20 years):</p>
+<pre class="r"><code>sum(exp_projs$exposure * adjustment_rates) / 10^6 / 20</code></pre>
+<pre><code>## [1] 55.71625</code></pre>
+<p>For this ensemble member, emission scenario, and population scenario, our estimated projection of exposure to hyper-heatwaves is 56 million person-days per year across the 82 study communities.</p>
 </div>
 </div>
 

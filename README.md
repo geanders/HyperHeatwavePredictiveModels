@@ -47,12 +47,13 @@ ls()
 ```
 ##  [1] "adjustment_rates" "bag.tree.rose"    "boost.tree.rose" 
 ##  [4] "cause"            "citycensus"       "df"              
-##  [7] "df2"              "ex"               "f"               
-## [10] "lag"              "land_area"        "my.causes"       
-## [13] "my.cities"        "my.lags"          "my.mod.expr"     
-## [16] "proj_hws"         "proj_pops"        "projs_bag"       
-## [19] "projs_boost"      "projs_tree"       "resids"          
-## [22] "unadj_counts"     "unadj.counts"     "unpr.tree.rose"
+##  [7] "df2"              "ex"               "exp_projs"       
+## [10] "exp_projs2"       "f"                "lag"             
+## [13] "land_area"        "my.causes"        "my.cities"       
+## [16] "my.lags"          "my.mod.expr"      "proj_hws"        
+## [19] "proj_pops"        "projs_bag"        "projs_boost"     
+## [22] "projs_tree"       "resids"           "unadj_counts"    
+## [25] "unadj.counts"     "unpr.tree.rose"
 ```
 
 ```r
@@ -69,12 +70,13 @@ ls()
 ```
 ##  [1] "adjustment_rates" "bag.tree.rose"    "boost.tree.rose" 
 ##  [4] "cause"            "citycensus"       "df"              
-##  [7] "df2"              "ex"               "f"               
-## [10] "lag"              "land_area"        "my.causes"       
-## [13] "my.cities"        "my.lags"          "my.mod.expr"     
-## [16] "proj_hws"         "proj_pops"        "projs_bag"       
-## [19] "projs_boost"      "projs_tree"       "resids"          
-## [22] "unadj_counts"     "unadj.counts"     "unpr.tree.rose"
+##  [7] "df2"              "ex"               "exp_projs"       
+## [10] "exp_projs2"       "f"                "lag"             
+## [13] "land_area"        "my.causes"        "my.cities"       
+## [16] "my.lags"          "my.mod.expr"      "proj_hws"        
+## [19] "proj_pops"        "projs_bag"        "projs_boost"     
+## [22] "projs_tree"       "resids"           "unadj_counts"    
+## [25] "unadj.counts"     "unpr.tree.rose"
 ```
 
 # Example data
@@ -281,7 +283,15 @@ head(projs_boost)
 
 The following equations can be used to estimate the total number of hyper-heatwaves projected within a dataset of heatwaves: 
 
-...
+$$ H_{h} = H_{ph} * P + H_{pl} * F $$
+
+where: 
+
+- $H_{h}$ is the estimated number of hyper-heatwaves
+- $H_{ph}$ is the number of heatwaves predicted by the model to be hyper-heatwaves
+- $P$ is the model's estimated precision
+- $H_{pl}$ is the number of heatwaves predicted by the model to be less dangerous heatwaves
+- $F$ is the model's estimated false precision rate
 
 This equation takes the total number of heatwaves predicted by the model to belong to each class and adjusts these values by estimates of the model's precision and false omission rates. 
 
@@ -297,7 +307,7 @@ Here is an example of how to apply this equation to projections from the bagging
 
 
 ```r
-adjustment_rates <- c(0.0, 2.6)
+adjustment_rates <- c(0.0, 2.6) / 100
 
 unadj_counts <- table(projs_bag)
 unadj_counts
@@ -310,11 +320,93 @@ unadj_counts
 ```
 
 ```r
-sum(unadj_counts * adjustment_rates / 100)
+sum(unadj_counts * adjustment_rates)
 ```
 
 ```
 ## [1] 47.736
 ```
 
-Based on this calculation, our projection for this set of scenarios is that we would expect around 48 hyper-heatwaves in the 82 study communities for 2061--2080. 
+Based on this calculation, our projection for this set of scenarios is that we would expect around 0 hyper-heatwaves in the 82 study communities for 2061--2080. 
+
+### Estimating hyper-heatwave frequency from the predictions
+
+Exposure to hyper-heatwaves combines both the frequency of such heatwaves with projections of how long they will last and how many people will be living in the affected community. The following equation can be used to project hyper-heatwave exposure using the predictions from our health-based models: 
+
+$$ E_{h} = P\sum_{i}(D_{i}N_{i}) + F\sum_{j}(D_{j}N_{j}) $$
+
+where: 
+
+- $E_{h}$ is the estimated exposure to hyper-heatwaves, in person-days
+- $P$ is the model's estimated precision
+- $i$ indexes across all heatwaves classified as hyper-heatwaves by the predictive model
+- $D_{i}$ is the length of heatwave $i$ in days
+- $N_{i}$ is the population of the community in which heatwave $i$ occurs
+- $F$ is the model's estimated false omission rate
+- $j$ indexes across all heatwaves classified as less dangerous heatwaves by the predictive model
+- $D_{j}$ is the length of heatwave $j$ in days
+- $N_{j}$ is the population of the community in which heatwave $j$ occurs
+
+The following code gives an example of how exposure to hyper-heatwaves could be estimated in R based on `projs_bag`, the results from applying the predictive bagging model to the projected heatwave data.
+
+First, it's necessary to combine the model predictions with data from the original heatwave dataset on heatwave length and population of the community in which the heatwave occurred:
+
+
+```r
+exp_projs <- data.frame(prediction = projs_bag,
+                        length = proj_hws$length,
+                        pop = proj_hws$pop100)
+exp_projs[sample(1:nrow(exp_projs), 6), ]
+```
+
+```
+##      prediction length      pop
+## 2581      other      4   371202
+## 7039      other      2 10548212
+## 4196      other     31  4282537
+## 869       other      4   819231
+## 4312      other      8  1054449
+## 3355      other      3   798119
+```
+
+Now this dataframe can be used to calculate the person-days of exposure for each heatwave and sum this exposure by predicted class of heatwave:
+
+
+```r
+exp_projs <- mutate(exp_projs, exposure = length * pop) %>%
+        group_by(prediction) %>%
+        summarise(exposure = sum(exposure))
+exp_projs
+```
+
+```
+## Source: local data frame [2 x 2]
+## 
+##   prediction     exposure
+## 1      other 106250642249
+## 2       very  42858657528
+```
+
+Now the estimated exposure can be calculated by adjusting these two values for the model's estimated precision and false omission rates (saved in earlier code as `adjustment_rates`):
+
+
+```r
+sum(exp_projs$exposure * adjustment_rates)
+```
+
+```
+## [1] 1114325096
+```
+
+This number can also be presented in units of millions of person-days per year (the example dataset covers 20 years):
+
+
+```r
+sum(exp_projs$exposure * adjustment_rates) / 10^6 / 20
+```
+
+```
+## [1] 55.71625
+```
+
+For this ensemble member, emission scenario, and population scenario, our estimated projection of exposure to hyper-heatwaves is 56 million person-days per year across the 82 study communities.
