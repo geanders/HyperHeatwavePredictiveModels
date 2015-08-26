@@ -40,14 +40,9 @@ Boosting model  | `boost.tree.rose19.RData`
 All models are saved as R objects. Provided they are saved within the working directory for R, they can be loaded using the `load()` command. Once you load the files, these models will be available as the R objects `unpr.tree.rose`, `bag.tree.rose`, and `boost.tree.rose`:
 
 ```{r}
-ls()
 load("unpr.tree.rose.RData")
 load("bag.tree.rose.RData")
 load("boost.tree.rose.RData")
-```
-
-```{r}
-ls()
 ```
 
 # Example data
@@ -281,3 +276,25 @@ sum(exp_projs$exposure * adjustment_rates) / 10^6 / 20
 ```
 
 For this ensemble member, emission scenario, and population scenario, our estimated projection of exposure to hyper-heatwaves is `r round(sum(exp_projs$exposure * adjustment_rates) / 10^6 / 20)` million person-days per year across the 82 study communities.
+
+## Using the sensitivity analysis models
+
+Projections of trends in hyper-heatwaves could be sensitive to the threshold used to define a hyper-heatwaves. Our main models were developed using the definition that a hyper-heatwave was associated with a 20% or greater increase in all-cause mortality risk.
+
+As a sensitivity analysis, we investigated alternative definitions: we considered using thresholds of 19% and 21% increase in mortality risk to define hyper-heatwaves. Models were unchanged with the 21% threshold definition because no heatwaves in the training dataset fell between 20% and 21% increase in mortality risk. 
+
+However, some heatwaves did fall between the 19% and 20% threshold values, and so we generated different models, to use in sensitivity analyses, based on the 19% threshold definition of a hyper-heatwave. These models are available in the following files:
+
+Model           | File name
+--------------  | ----------
+Tree model      | `unpr.tree.rose19.RData`
+Bagging model   | `bag.tree.rose19.RData`
+Boosting model  | `boost.tree.rose19.RData`
+
+They can be loaded and used in the same way as the main models. Here are the estimated precision and false omission rates for these three models:
+
+Model          | Precision   | False omission rate
+-------------- | ----------- | --------------------
+Tree model     | 0.5%        | 0.1%
+Bagging model  | 0.5%        | 0.1%
+Boosting model | 0.5%        | 0.1%

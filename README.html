@@ -145,13 +145,9 @@ img {
 <div id="loading-models-into-r" class="section level1">
 <h1>Loading models into R</h1>
 <p>All models are saved as R objects. Provided they are saved within the working directory for R, they can be loaded using the <code>load()</code> command. Once you load the files, these models will be available as the R objects <code>unpr.tree.rose</code>, <code>bag.tree.rose</code>, and <code>boost.tree.rose</code>:</p>
-<pre class="r"><code>ls()</code></pre>
-<pre><code>## character(0)</code></pre>
 <pre class="r"><code>load(&quot;unpr.tree.rose.RData&quot;)
 load(&quot;bag.tree.rose.RData&quot;)
 load(&quot;boost.tree.rose.RData&quot;)</code></pre>
-<pre class="r"><code>ls()</code></pre>
-<pre><code>## [1] &quot;bag.tree.rose&quot;   &quot;boost.tree.rose&quot; &quot;unpr.tree.rose&quot;</code></pre>
 </div>
 <div id="example-data" class="section level1">
 <h1>Example data</h1>
@@ -468,12 +464,12 @@ unadj_counts</code></pre>
                         pop = proj_hws$pop100)
 exp_projs[sample(1:nrow(exp_projs), 6), ]</code></pre>
 <pre><code>##       prediction length     pop
-## 11812      other      3  971715
-## 1935       other      9 6370140
-## 8326       other      2 1251723
-## 9894       other      8  819890
-## 2775       other      9  686807
-## 3541       other      2  400951</code></pre>
+## 9611       other      2 2042107
+## 12326      other     21  544432
+## 12376      other      8  544432
+## 3          other      2  670335
+## 2069       other      2 1065523
+## 11779       very     16  971715</code></pre>
 <p>Now this dataframe can be used to calculate the person-days of exposure for each heatwave and sum this exposure by predicted class of heatwave:</p>
 <pre class="r"><code>exp_projs &lt;- mutate(exp_projs, exposure = length * pop) %&gt;%
         group_by(prediction) %&gt;%
@@ -491,6 +487,61 @@ exp_projs</code></pre>
 <pre class="r"><code>sum(exp_projs$exposure * adjustment_rates) / 10^6 / 20</code></pre>
 <pre><code>## [1] 55.71625</code></pre>
 <p>For this ensemble member, emission scenario, and population scenario, our estimated projection of exposure to hyper-heatwaves is 56 million person-days per year across the 82 study communities.</p>
+</div>
+<div id="using-the-sensitivity-analysis-models" class="section level2">
+<h2>Using the sensitivity analysis models</h2>
+<p>Projections of trends in hyper-heatwaves could be sensitive to the threshold used to define a hyper-heatwaves. Our main models were developed using the definition that a hyper-heatwave was associated with a 20% or greater increase in all-cause mortality risk.</p>
+<p>As a sensitivity analysis, we investigated alternative definitions: we considered using thresholds of 19% and 21% increase in mortality risk to define hyper-heatwaves. Models were unchanged with the 21% threshold definition because no heatwaves in the training dataset fell between 20% and 21% increase in mortality risk.</p>
+<p>However, some heatwaves did fall between the 19% and 20% threshold values, and so we generated different models, to use in sensitivity analyses, based on the 19% threshold definition of a hyper-heatwave. These models are available in the following files:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Model</th>
+<th align="left">File name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Tree model</td>
+<td align="left"><code>unpr.tree.rose19.RData</code></td>
+</tr>
+<tr class="even">
+<td align="left">Bagging model</td>
+<td align="left"><code>bag.tree.rose19.RData</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Boosting model</td>
+<td align="left"><code>boost.tree.rose19.RData</code></td>
+</tr>
+</tbody>
+</table>
+<p>They can be loaded and used in the same way as the main models. Here are the estimated precision and false omission rates for these three models:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Model</th>
+<th align="left">Precision</th>
+<th align="left">False omission rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Tree model</td>
+<td align="left">0.5%</td>
+<td align="left">0.1%</td>
+</tr>
+<tr class="even">
+<td align="left">Bagging model</td>
+<td align="left">0.5%</td>
+<td align="left">0.1%</td>
+</tr>
+<tr class="odd">
+<td align="left">Boosting model</td>
+<td align="left">0.5%</td>
+<td align="left">0.1%</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 
