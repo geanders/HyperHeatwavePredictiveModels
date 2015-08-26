@@ -288,14 +288,10 @@ land_area &lt;- read.csv(&quot;land_area.csv&quot;, header = TRUE)</code></pre>
 <td align="left">FIPS county code</td>
 </tr>
 <tr class="odd">
-<td align="left">pop</td>
-<td align="left">…</td>
-</tr>
-<tr class="even">
 <td align="left">SSP3</td>
 <td align="left">Projected population under Shared Socioeconomic Pathway 3</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">SSP5</td>
 <td align="left">Projected population under Shared Socioeconomic Pathway 5</td>
 </tr>
@@ -412,6 +408,48 @@ head(projs_boost)</code></pre>
 </div>
 <div id="estimating-hyper-heatwave-frequency-from-the-predictions" class="section level3">
 <h3>Estimating hyper-heatwave frequency from the predictions</h3>
+<p>The following equations can be used to estimate the total number of hyper-heatwaves projected within a dataset of heatwaves:</p>
+<p>…</p>
+<p>This equation takes the total number of heatwaves predicted by the model to belong to each class and adjusts these values by estimates of the model’s precision and false omission rates.</p>
+<p>The equation requires estimates of the precision and false omission rates. We estimated these for each of the three models using Monte Carlo cross-validation (for more details, see our paper describing the development of these models). These are our estimates for these values for the three models:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Model</th>
+<th align="left">Precision</th>
+<th align="left">False omission rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Tree model</td>
+<td align="left">2.6%</td>
+<td align="left">0.0%</td>
+</tr>
+<tr class="even">
+<td align="left">Bagging model</td>
+<td align="left">2.6%</td>
+<td align="left">0.0%</td>
+</tr>
+<tr class="odd">
+<td align="left">Boosting model</td>
+<td align="left">2.3%</td>
+<td align="left">0.0%</td>
+</tr>
+</tbody>
+</table>
+<p>Here is an example of how to apply this equation to projections from the bagging model. First, a vector is created that has the adjustment rates (false omission rates and precision rates).</p>
+<pre class="r"><code>adjustment_rates &lt;- c(0.0, 2.6)
+names(adjustment_rates) &lt;- c(&quot;false_omission&quot;, &quot;precision&quot;)
+
+unadj_counts &lt;- table(projs_bag)
+unadj_counts</code></pre>
+<pre><code>## projs_bag
+## other  very 
+## 10719  1836</code></pre>
+<pre class="r"><code>sum(unadj_counts * adjustment_rates / 100)</code></pre>
+<pre><code>## [1] 47.736</code></pre>
+<p>Based on this calculation, our projection for this set of scenarios is that we would expect around 48 hyper-heatwaves in the 82 study communities for 2061–2080.</p>
 </div>
 </div>
 

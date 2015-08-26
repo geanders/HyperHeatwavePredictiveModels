@@ -194,3 +194,30 @@ head(projs_boost)
 ```
 
 ### Estimating hyper-heatwave frequency from the predictions
+
+The following equations can be used to estimate the total number of hyper-heatwaves projected within a dataset of heatwaves: 
+
+...
+
+This equation takes the total number of heatwaves predicted by the model to belong to each class and adjusts these values by estimates of the model's precision and false omission rates. 
+
+The equation requires estimates of the precision and false omission rates. We estimated these for each of the three models using Monte Carlo cross-validation (for more details, see our paper describing the development of these models). These are our estimates for these values for the three models:
+
+Model          | Precision   | False omission rate
+-------------- | ----------- | --------------------
+Tree model     | 2.6%        | 0.0%
+Bagging model  | 2.6%        | 0.0%
+Boosting model | 2.3%        | 0.0%
+
+Here is an example of how to apply this equation to projections from the bagging model. First, a vector is created that has the adjustment rates (false omission rates and precision rates). 
+
+```{r}
+adjustment_rates <- c(0.0, 2.6)
+
+unadj_counts <- table(projs_bag)
+unadj_counts
+
+sum(unadj_counts * adjustment_rates / 100)
+```
+
+Based on this calculation, our projection for this set of scenarios is that we would expect around `r round(sum(unadj_counts * adjustment_rates / 100))` hyper-heatwaves in the 82 study communities for 2061--2080. 
