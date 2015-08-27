@@ -89,7 +89,7 @@ mean.summer.temp     | Average warm season (May--September) temperature in the c
 
 [Something here about adaptation scenario in the example data.]
 
-Full details on the creation of this dataset are available in Oleson et al. 2015. 
+Full details on the creation of this dataset are available in [Oleson et al. 2015]. 
 
 ### Projected populations dataset
 
@@ -99,10 +99,10 @@ This dataset has the following variables:
 
 Column name          | Meaning
 -------------------- | ----------------------------------
-city                 | Community (abbreviation)
+city                 | Abbreviation for community 
 county               | County name
 statename            | State name
-fips                 | FIPS county code
+fips                 | Federal Information Processing Standard county code
 SSP3                 | Projected population under Shared Socioeconomic Pathway 3
 SSP5                 | Projected population under Shared Socioeconomic Pathway 5
 
@@ -114,27 +114,27 @@ The third file, `land_area.csv`, provides the land area of each of the study com
 
 Column name          | Meaning
 -------------------- | ----------------------------------
-city                 | Community (abbreviation)
-arealand             | Land aread of the community
+city                 | Abbreviation for community
+arealand             | Land area of the community in m<sup>2</sup>
 
 # Formatting a heatwave dataset for the models
 
-To run through the predictive models, data describing heatwaves must be in the format of a dataframe and must include all of the heatwave characteristics in `proj_hws`, plus two characteristics generated from the population data, community population and community population density. 
+To run through the predictive models, data describing heatwaves must be in the format of a dataframe and must include all of the heatwave characteristics in the example dataset `proj_hws`, plus two characteristics generated from the population data--  population and population density for the community in which the heatwave occurred. 
 
-Here is an example of code to add the variables `pop100`, which gives population size under the SSP5 scenario, and `pop.density`, which gives the population density under the SSP5 scenario. This code uses functions from the `dplyr` function to sum populations across different counties for a community, join the population data to the land area data by community, and then calculate the population density.
+Here is an example of code to add the variables `pop100`, which gives population size under the SSP5 scenario, and `pop.density`, which gives the population density under the SSP5 scenario. This code uses functions from the `dplyr` package to sum populations across different counties in a community, join the population data to the land area data by community, and then calculate the population density for each community.
 
 ```{r, message=FALSE}
 library(dplyr)
 
 proj_pops <- group_by(proj_pops, city) %>%
-        summarise(pop100 = sum(SSP3)) %>%
+        summarise(pop100 = sum(SSP5)) %>%
         left_join(land_area) %>%
         mutate(pop.density = pop100 / arealand) %>%
         dplyr::select(-arealand)
 head(proj_pops)
 ```
 
-Now this data can be merged in with the heatwave characteristics given in `proj_hws`:
+Now this data can be merged with the heatwave characteristics given in `proj_hws`:
 
 ```{r}
 proj_hws <- left_join(proj_hws, proj_pops, by = "city")
@@ -146,11 +146,11 @@ The `proj_hws` dataset now has all the variables needed to run through the healt
 colnames(proj_hws)
 ```
 
-To use these health-based models for a dataset of heatwaves, it is important that all the same variables be calculated for the heatwaves and that they be saved using the same column names as those used here. This is how the health-based models will recognize the heatwave characteristics required to predict from the model.
+To use these health-based models for a dataset of heatwaves, it is important that all the same variables be calculated and that they be saved using the same column names as those used here. This is how the health-based models will recognize the heatwave characteristics required to predict from the model. Variables need to be measured in the same units as in this example data (e.g., temperature in &deg;F, population density in people/m<sup>2</sup>).
 
 # Using the models
 
-Once a heatwave dataset is in the correct format, the models can be applied to the dataset to predict which heatwaves are likely to be hyper-heatwaves, based on these heatwave characterstics. Since the models generate a lot of false positives, the total number of projected hyper-heatwaves will then need to be adjusted to account for the models' false positive rates (precision). 
+Once a heatwave dataset is in the correct format, the models can be applied to the dataset to predict which heatwaves are likely to be hyper-heatwaves, based on these heatwave characterstics. Since the models generate a lot of false positives, the total number of projected hyper-heatwaves will then need to be adjusted to account for the models' precision (estimate of the percent of all heatwaves that are predicted by the model to be hyper-heatwaves that actually are hyper-heatwaves; see [Anderson et al. in prep.]). 
 
 ### Generating predictions from the models
 
@@ -162,7 +162,7 @@ library(randomForest)
 library(gbm)
 ```
 
-For all three models, the `predict` function can be used to use the model to predict outcomes for a new dataset, in this case the heatwave dataset `proj_hws`:
+For all three models, the `predict` function can be used with the model to predict outcomes for a new dataset, in this case the heatwave dataset `proj_hws`:
 
 ```{r}
 projs_tree <- predict(unpr.tree.rose,
@@ -177,7 +177,7 @@ projs_boost <- predict(boost.tree.rose,
                        n.trees = 500)
 ```
 
-The methods for these three models differ somewhat, and as a result, the prediction calls differ and the predictive output differs in format. For example, while the predictions from the tree and bagging models are a string of predictions for the heatwaves-- either "very" if the heatwave is predicted to be a hyper-heatwave or "other" otherwise-- the predictions from the boosting model are numeric. 
+The methods for these three models differ somewhat, and as a result, the prediction calls differ and the predictive output differs in format. For example, while the predictions from the tree and bagging models are a string of predictions for the heatwaves-- either "very" if the heatwave is predicted to be a hyper-heatwave or "other" otherwise-- the predictions from the boosting model are numeric: 
 
 ```{r}
 head(projs_tree)
@@ -204,11 +204,11 @@ where:
 - $H_{ph}$ is the number of heatwaves predicted by the model to be hyper-heatwaves
 - $P$ is the model's estimated precision
 - $H_{pl}$ is the number of heatwaves predicted by the model to be less dangerous heatwaves
-- $F$ is the model's estimated false precision rate
+- $F$ is the model's estimated false omission rate
 
-This equation takes the total number of heatwaves predicted by the model to belong to each class and adjusts these values by estimates of the model's precision and false omission rates. 
+This equation takes the total number of heatwaves that the model predicts to belong to each class and adjusts these values by estimates of the model's precision and false omission rate. 
 
-The equation requires estimates of the precision and false omission rates. We estimated these for each of the three models using Monte Carlo cross-validation (for more details, see our paper describing the development of these models). These are our estimates for these values for the three models:
+The equation requires estimates of the precision and false omission rate for the predictive model. We estimated these for each of the three models using Monte Carlo cross-validation (for more details, see our paper describing the development of these models). These are our estimates for these values for the three models:
 
 Model          | Precision   | False omission rate
 -------------- | ----------- | --------------------
@@ -227,7 +227,7 @@ unadj_counts
 sum(unadj_counts * adjustment_rates)
 ```
 
-Based on this calculation, our projection for this set of scenarios is that we would expect around `r round(sum(unadj_counts * adjustment_rates / 100))` hyper-heatwaves in the 82 study communities for 2061--2080. 
+Based on this calculation, our projection for this set of scenarios is that we would expect around `r round(sum(unadj_counts * adjustment_rates))` hyper-heatwaves in the 82 study communities for 2061--2080. 
 
 ### Estimating hyper-heatwave frequency from the predictions
 
@@ -247,9 +247,9 @@ where:
 - $D_{j}$ is the length of heatwave $j$ in days
 - $N_{j}$ is the population of the community in which heatwave $j$ occurs
 
-The following code gives an example of how exposure to hyper-heatwaves could be estimated in R based on `projs_bag`, the results from applying the predictive bagging model to the projected heatwave data.
+The following code gives an example of how exposure to hyper-heatwaves could be estimated in R using the predictions from the bagging model, `projs_bag`.
 
-First, it's necessary to combine the model predictions with data from the original heatwave dataset on heatwave length and population of the community in which the heatwave occurred:
+First, it's necessary to combine the model predictions with data from the heatwave dataset on heatwave length and population of the community in which the heatwave occurred:
 
 ```{r}
 exp_projs <- data.frame(prediction = projs_bag,
@@ -258,7 +258,7 @@ exp_projs <- data.frame(prediction = projs_bag,
 exp_projs[sample(1:nrow(exp_projs), 6), ]
 ```
 
-Now this dataframe can be used to calculate the person-days of exposure for each heatwave and sum this exposure by predicted class of heatwave:
+Now this dataframe can be used to calculate the person-days of exposure for each heatwave and then sum this exposure by predicted class of heatwave:
 
 ```{r}
 exp_projs <- mutate(exp_projs, exposure = length * pop) %>%
@@ -267,7 +267,7 @@ exp_projs <- mutate(exp_projs, exposure = length * pop) %>%
 exp_projs
 ```
 
-Now the estimated exposure can be calculated by adjusting these two values for the model's estimated precision and false omission rates (saved in earlier code as `adjustment_rates`):
+The estimated exposure can now be calculated by adjusting these two values for the model's estimated precision and false omission rates (saved in earlier code as `adjustment_rates`):
 
 ```{r}
 sum(exp_projs$exposure * adjustment_rates)
@@ -279,11 +279,11 @@ This number can also be presented in units of millions of person-days per year (
 sum(exp_projs$exposure * adjustment_rates) / 10^6 / 20
 ```
 
-For this ensemble member, emission scenario, and population scenario, our estimated projection of exposure to hyper-heatwaves is `r round(sum(exp_projs$exposure * adjustment_rates) / 10^6 / 20)` million person-days per year across the 82 study communities.
+For this combination of ensemble member, emission scenario, and population scenario, our estimated projection of exposure to hyper-heatwaves is `r round(sum(exp_projs$exposure * adjustment_rates) / 10^6 / 20)` million person-days per year across the 82 study communities.
 
 ## Using the sensitivity analysis models
 
-Projections of trends in hyper-heatwaves could be sensitive to the threshold used to define a hyper-heatwaves. Our main models were developed using the definition that a hyper-heatwave was associated with a 20% or greater increase in all-cause mortality risk.
+Projections of trends in hyper-heatwaves could be sensitive to the threshold used to define a hyper-heatwave. Our main models were developed using the definition that a hyper-heatwave was a heatwave associated with a 20% or greater increase in all-cause mortality risk.
 
 As a sensitivity analysis, we investigated alternative definitions: we considered using thresholds of 19% and 21% increase in mortality risk to define hyper-heatwaves. Models were unchanged with the 21% threshold definition because no heatwaves in the training dataset fell between 20% and 21% increase in mortality risk. 
 
@@ -295,7 +295,7 @@ Tree model      | `unpr.tree.rose19.RData`
 Bagging model   | `bag.tree.rose19.RData`
 Boosting model  | `boost.tree.rose19.RData`
 
-They can be loaded and used in the same way as the main models. Here are the estimated precision and false omission rates for these three models:
+They can be loaded and used in the same way as the main models. Here are the estimated precision and false omission rates for these three models, which are needed in the equations described earlier:
 
 Model          | Precision   | False omission rate
 -------------- | ----------- | --------------------
