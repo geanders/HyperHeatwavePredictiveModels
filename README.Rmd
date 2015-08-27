@@ -43,10 +43,6 @@ references:
     month: In prep.
 ---
 
-`r library(knitr)`
-`r library(knitcitations)`
-`r options("citation_format" = "pandoc")`
-
 # Overview
 
 We have developed several predictive models to classify whether a heatwave is a hyper-heatwave, which we define as a heatwave associated with a 20% or higher increase in all-cause mortality risk in the community in which it occurs. The methods used to develop these models are fully described in a paper we are currently preparing to submit (@anderson2015a), and projections created using the models under different future scenarios are given in another paper we are preparing to submit (@anderson2015b). Once the papers are published, we will provide links.

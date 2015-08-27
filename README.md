@@ -43,10 +43,6 @@ references:
     month: In prep.
 ---
 
-
-
-
-
 # Overview
 
 We have developed several predictive models to classify whether a heatwave is a hyper-heatwave, which we define as a heatwave associated with a 20% or higher increase in all-cause mortality risk in the community in which it occurs. The methods used to develop these models are fully described in a paper we are currently preparing to submit (@anderson2015a), and projections created using the models under different future scenarios are given in another paper we are preparing to submit (@anderson2015b). Once the papers are published, we will provide links.
@@ -373,12 +369,12 @@ exp_projs[sample(1:nrow(exp_projs), 6), ]
 
 ```
 ##       prediction length      pop
-## 12116      other     17  1396388
-## 5863        very     21  1956333
-## 8296       other      3  2743347
-## 9474       other      3  3075396
-## 3163       other      2   837326
-## 7086        very      7 18197664
+## 7540       other      4  1432184
+## 11325      other      4  1467742
+## 3057       other      5   837326
+## 5414        very      5 20802039
+## 10350      other      2  3715510
+## 3892       other      2  1261938
 ```
 
 Now this dataframe can be used to calculate the person-days of exposure for each heatwave and then sum this exposure by predicted class of heatwave:
