@@ -70,7 +70,7 @@ img {
 
 <div id="overview" class="section level1">
 <h1>Overview</h1>
-<p>We have developed several predictive models to classify whether a heatwave is a hyper-heatwave, which we define as a heatwave associated with a 20% or higher increase in all-cause mortality risk in the community in which it occurs. The methods used to develop these models are fully described in a paper we are currently preparing to submit (<span class="citation">Anderson et al. (2015a)</span>), and projections created using the models under different future scenarios are given in another paper we are preparing to submit (<span class="citation">Anderson et al. (2015b)</span>). Once the papers are published, we will provide links.</p>
+<p>We have developed several predictive models to classify whether a heatwave is a hyper-heatwave, which we define as a heatwave associated with a 20% or higher increase in all-cause mortality risk in the community in which it occurs. The methods used to develop these models are fully described in a paper we are currently preparing to submit (<span class="citation">@anderson2015a</span>), and projections created using the models under different future scenarios are given in another paper we are preparing to submit (<span class="citation">@anderson2015b</span>). Once the papers are published, we will provide links.</p>
 <p>This repository includes three main models, all of which use, as predictive variables of whether a heatwave is a hyper-heatwave, a variety of characteristics of the heatwave. These models are:</p>
 <table>
 <thead>
@@ -149,7 +149,7 @@ img {
 <pre class="r"><code>load(&quot;unpr.tree.rose.RData&quot;)
 load(&quot;bag.tree.rose.RData&quot;)
 load(&quot;boost.tree.rose.RData&quot;)</code></pre>
-<p>A full description of the development of these models is provided in <span class="citation">Anderson et al. (2015a)</span>.</p>
+<p>A full description of the development of these models is provided in <span class="citation">@anderson2015a</span>.</p>
 </div>
 <div id="example-data" class="section level1">
 <h1><a name="example_data"></a>Example data</h1>
@@ -248,7 +248,7 @@ land_area &lt;- read.csv(&quot;land_area.csv&quot;, header = TRUE)</code></pre>
 </tbody>
 </table>
 <p>[Something here about adaptation scenario in the example data.]</p>
-<p>Full details on the creation of this dataset are available in <span class="citation">Oleson et al. (2015)</span>.</p>
+<p>Full details on the creation of this dataset are available in <span class="citation">@oleson2015</span>.</p>
 </div>
 <div id="projected-populations-dataset" class="section level3">
 <h3>Projected populations dataset</h3>
@@ -349,7 +349,7 @@ head(proj_pops)</code></pre>
 </div>
 <div id="using-the-models" class="section level1">
 <h1>Using the models</h1>
-<p>Once a heatwave dataset is in the correct format, the models can be applied to the dataset to predict which heatwaves are likely to be hyper-heatwaves, based on these heatwave characterstics. Since the models generate a lot of false positives, the total number of projected hyper-heatwaves will then need to be adjusted to account for the models’ precision (estimate of the percent of all heatwaves that are predicted by the model to be hyper-heatwaves that actually are hyper-heatwaves; see <span class="citation">Anderson et al. (2015a)</span>).</p>
+<p>Once a heatwave dataset is in the correct format, the models can be applied to the dataset to predict which heatwaves are likely to be hyper-heatwaves, based on these heatwave characterstics. Since the models generate a lot of false positives, the total number of projected hyper-heatwaves will then need to be adjusted to account for the models’ precision (estimate of the percent of all heatwaves that are predicted by the model to be hyper-heatwaves that actually are hyper-heatwaves; see <span class="citation">@anderson2015a</span>).</p>
 <div id="generating-predictions-from-the-models" class="section level3">
 <h3>Generating predictions from the models</h3>
 <p>To have access to prediction methods for the three models, it is necessary to load the following three R packages:</p>
@@ -396,7 +396,7 @@ head(projs_boost)</code></pre>
 <li><span class="math">\(F\)</span> is the model’s estimated false omission rate</li>
 </ul>
 <p>This equation takes the total number of heatwaves that the model predicts to belong to each class and adjusts these values by estimates of the model’s precision and false omission rate.</p>
-<p>The equation requires estimates of the precision and false omission rate for the predictive model. We estimated these for each of the three models using Monte Carlo cross-validation (for more details, see our paper describing the development of these models: <span class="citation">Anderson et al. (2015a)</span>). These are our estimates for these values for the three models:</p>
+<p>The equation requires estimates of the precision and false omission rate for the predictive model. We estimated these for each of the three models using Monte Carlo cross-validation (for more details, see our paper describing the development of these models: <span class="citation">@anderson2015a</span>). These are our estimates for these values for the three models:</p>
 <table>
 <thead>
 <tr class="header">
@@ -457,13 +457,13 @@ unadj_counts</code></pre>
                         length = proj_hws$length,
                         pop = proj_hws$pop100)
 exp_projs[sample(1:nrow(exp_projs), 6), ]</code></pre>
-<pre><code>##      prediction length     pop
-## 7468      other      4 3096896
-## 9322      other      3 1947893
-## 8478      other      2 1307517
-## 2084      other      5 1869992
-## 6684      other      5  974578
-## 2685      other      2 1223104</code></pre>
+<pre><code>##       prediction length     pop
+## 6664       other      4  974578
+## 3601       other      5  720001
+## 9552        very      9 3673734
+## 8917       other      3 3208211
+## 10812      other      9  674357
+## 7713       other     11  871163</code></pre>
 <p>Now this dataframe can be used to calculate the person-days of exposure for each heatwave and then sum this exposure by predicted class of heatwave:</p>
 <pre class="r"><code>exp_projs &lt;- mutate(exp_projs, exposure = length * pop) %&gt;%
         group_by(prediction) %&gt;%
@@ -536,13 +536,13 @@ exp_projs</code></pre>
 </tr>
 </tbody>
 </table>
-<div class="references">
-<h1 id="references">References</h1>
-<p>Anderson, Oleson, Jones, and Peng. 2015a. “Predicting Hyper-Heatwaves– Developing Health-Based Models to Predict Whether a Heatwave Is Likely a Hyper-Heatwave or a Less Dangerous Heatwave Based on Its Characteristics.” <em>Climatic Change</em> (In prep.).</p>
-<p>———. 2015b. “Hyper-Heatwaves and Health in a Changing Future– Projecting Frequency of High-Mortality Heatwaves in 82 US Communities in 2061–2080 Under Different Climate, Population, and Adaptation Scenarios.” <em>Climatic Change</em> (In prep.).</p>
-<p>Oleson, Anderson, Jones, McGinnis, and Sanderson. 2015. “Avoided Climate Impacts of Urban and Rural Heat and Cold Waves over the U.S. Using Large Climate Model Ensembles for RCP8.5 and RCP4.5.” <em>Climatic Change</em> (In press).</p>
 </div>
 </div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<p>Anderson, Oleson, Jones, and Peng. 2015a. Predicting hyper-heatwaves: Developing health-based models to predict whether a heatwave is likely a hyper-heatwave or a less dangerous heatwave based on its characteristics. <em>Climatic Change</em> (In prep.).</p>
+<p>Anderson, Oleson, Jones, and Peng. 2015b. Hyper-heatwaves and health in a changing future– Projecting frequency of high-mortality heatwaves in 82 US communities in 2061–2080 under different climate, population, and adaptation scenarios. <em>Climatic Change</em> (In prep.).</p>
+<p>Oleson, Anderson, Jones, McGinnis, and Sanderson. 2015. Avoided climate impacts of urban and rural heat and cold waves over the U.S. using large climate model ensembles for RCP8.5 and RCP4.5. <em>Climatic Change</em> (In press).</p>
 </div>
 
 
