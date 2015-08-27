@@ -3,44 +3,6 @@ title: "Hyper-heatwave predictive models"
 author: "G. Brooke Anderson, Keith Oleson, Bryan Jones, Roger D. Peng"
 date: "August 25, 2015"
 output: html_document
-references:
-- id: oleson2015
-  title: Avoided climate impacts of urban and rural heat and cold waves over the U.S. using large climate model ensembles for RCP8.5 and RCP4.5
-  author:
-  - family: Oleson
-  - family: Anderson
-  - family: Jones
-  - family: McGinnis
-  - family: Sanderson
-  container-title: Climatic Change
-  type: article-journal
-  issued:
-    year: 2015
-    month: In press
-- id: anderson2015a
-  title: Predicting hyper-heatwaves-- Developing health-based models to predict whether a heatwave is likely a hyper-heatwave or a less dangerous heatwave based on its characteristics 
-  author:
-  - family: Anderson
-  - family: Oleson
-  - family: Jones
-  - family: Peng
-  container-title: Climatic Change
-  type: article-journal
-  issued:
-    year: 2015
-    month: In prep.
-- id: anderson2015b
-  title: Hyper-heatwaves and health in a changing future-- Projecting frequency of high-mortality heatwaves in 82 US communities in 2061--2080 under different climate, population, and adaptation scenarios 
-  author:
-  - family: Anderson
-  - family: Oleson
-  - family: Jones
-  - family: Peng
-  container-title: Climatic Change
-  type: article-journal
-  issued:
-    year: 2015
-    month: In prep.
 ---
 
 # Overview
@@ -368,13 +330,13 @@ exp_projs[sample(1:nrow(exp_projs), 6), ]
 ```
 
 ```
-##       prediction length      pop
-## 7540       other      4  1432184
-## 11325      other      4  1467742
-## 3057       other      5   837326
-## 5414        very      5 20802039
-## 10350      other      2  3715510
-## 3892       other      2  1261938
+##       prediction length     pop
+## 4457       other      9 1580058
+## 4649        very     11 1448068
+## 11948      other      6 1235169
+## 10782       very      5  674357
+## 497        other     15 3341739
+## 843        other      8 1446166
 ```
 
 Now this dataframe can be used to calculate the person-days of exposure for each heatwave and then sum this exposure by predicted class of heatwave:
@@ -442,3 +404,10 @@ Bagging model  | 0.5%        | 0.1%
 Boosting model | 0.5%        | 0.1%
 
 # References
+
+ Anderson, Oleson, Jones, and Peng. 2015a. Predicting hyper-heatwaves: Developing health-based models to predict whether a heatwave is likely a hyper-heatwave or a less dangerous heatwave based on its characteristics. *Climatic Change* (In prep.).
+  
+Anderson, Oleson, Jones, and Peng. 2015b. Hyper-heatwaves and health in a changing future-- Projecting frequency of high-mortality heatwaves in 82 US communities in 2061--2080 under different climate, population, and adaptation scenarios. *Climatic Change* (In prep.).
+
+Oleson, Anderson, Jones, McGinnis, and Sanderson. 2015. Avoided climate impacts of urban and rural heat and cold waves over the U.S. using large climate model ensembles for RCP8.5 and RCP4.5. *Climatic Change* (In press).
+  
