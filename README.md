@@ -3,11 +3,49 @@ title: "Hyper-heatwave predictive models"
 author: "G. Brooke Anderson, Keith Oleson, Bryan Jones, Roger D. Peng"
 date: "August 25, 2015"
 output: html_document
+references:
+- id: oleson2015
+  title: Avoided climate impacts of urban and rural heat and cold waves over the U.S. using large climate model ensembles for RCP8.5 and RCP4.5
+  author:
+  - family: Oleson
+  - family: Anderson
+  - family: Jones
+  - family: McGinnis
+  - family: Sanderson
+  container-title: Climatic Change
+  type: article-journal
+  issued:
+    year: 2015
+    month: In press
+- id: anderson2015a
+  title: Predicting hyper-heatwaves-- Developing health-based models to predict whether a heatwave is likely a hyper-heatwave or a less dangerous heatwave based on its characteristics 
+  author:
+  - family: Anderson
+  - family: Oleson
+  - family: Jones
+  - family: Peng
+  container-title: Climatic Change
+  type: article-journal
+  issued:
+    year: 2015
+    month: In prep.
+- id: anderson2015b
+  title: Hyper-heatwaves and health in a changing future-- Projecting frequency of high-mortality heatwaves in 82 US communities in 2061--2080 under different climate, population, and adaptation scenarios 
+  author:
+  - family: Anderson
+  - family: Oleson
+  - family: Jones
+  - family: Peng
+  container-title: Climatic Change
+  type: article-journal
+  issued:
+    year: 2015
+    month: In prep.
 ---
 
 # Overview
 
-We have developed several predictive models to classify whether a heatwave is a hyper-heatwave, which we define as a heatwave associated with a 20% or higher increase in all-cause mortality risk in the community in which it occurs. The methods used to develop these models are fully described in a paper we are currently preparing to submit ([Reference]). Once the paper is published, we will provide a link to the paper's web address.
+We have developed several predictive models to classify whether a heatwave is a hyper-heatwave, which we define as a heatwave associated with a 20% or higher increase in all-cause mortality risk in the community in which it occurs. The methods used to develop these models are fully described in a paper we are currently preparing to submit (@anderson2015a), and projections created using the models under different future scenarios are given in another paper we are preparing to submit (@anderson2015b). Once the papers are published, we will provide links.
 
 This repository includes three main models, all of which use, as predictive variables of whether a heatwave is a hyper-heatwave, a variety of characteristics of the heatwave. These models are: 
 
@@ -35,7 +73,7 @@ Tree model      | `unpr.tree.rose19.RData`
 Bagging model   | `bag.tree.rose19.RData`
 Boosting model  | `boost.tree.rose19.RData`
 
-These models were developed as a part of a larger project on the Benefits of Reducing Anthropogenic Climate changE ([BRACE](https://chsp.ucar.edu/brace-benefits-reduced-anthropogenic-climate-change); O'Neill and Gettelman, in prep.), which focuses on characterizing the difference in impacts driven by climate outcomes resulting from the forcing associated with RCP 8.5 and 4.5.
+These models were developed as a part of a larger project on the Benefits of Reducing Anthropogenic Climate changE ([BRACE](https://chsp.ucar.edu/brace-benefits-reduced-anthropogenic-climate-change)), which focuses on characterizing the difference in impacts driven by climate outcomes resulting from the forcing associated with RCP 8.5 and 4.5. 
 
 # Loading models into R
 
@@ -48,7 +86,7 @@ load("bag.tree.rose.RData")
 load("boost.tree.rose.RData")
 ```
 
-A full description of the development of these models is provided in [Anderson et al., in prep]. 
+A full description of the development of these models is provided in @anderson2015a. 
 
 # <a name="example_data"></a>Example data
 
@@ -91,7 +129,7 @@ mean.summer.temp     | Average warm season (May--September) temperature in the c
 
 [Something here about adaptation scenario in the example data.]
 
-Full details on the creation of this dataset are available in [Oleson et al. 2015]. 
+Full details on the creation of this dataset are available in @oleson2015. 
 
 ### Projected populations dataset
 
@@ -177,7 +215,7 @@ To use these health-based models for a dataset of heatwaves, it is important tha
 
 # Using the models
 
-Once a heatwave dataset is in the correct format, the models can be applied to the dataset to predict which heatwaves are likely to be hyper-heatwaves, based on these heatwave characterstics. Since the models generate a lot of false positives, the total number of projected hyper-heatwaves will then need to be adjusted to account for the models' precision (estimate of the percent of all heatwaves that are predicted by the model to be hyper-heatwaves that actually are hyper-heatwaves; see [Anderson et al. in prep.]). 
+Once a heatwave dataset is in the correct format, the models can be applied to the dataset to predict which heatwaves are likely to be hyper-heatwaves, based on these heatwave characterstics. Since the models generate a lot of false positives, the total number of projected hyper-heatwaves will then need to be adjusted to account for the models' precision (estimate of the percent of all heatwaves that are predicted by the model to be hyper-heatwaves that actually are hyper-heatwaves; see @anderson2015a). 
 
 ### Generating predictions from the models
 
@@ -265,7 +303,7 @@ where:
 
 This equation takes the total number of heatwaves that the model predicts to belong to each class and adjusts these values by estimates of the model's precision and false omission rate. 
 
-The equation requires estimates of the precision and false omission rate for the predictive model. We estimated these for each of the three models using Monte Carlo cross-validation (for more details, see our paper describing the development of these models). These are our estimates for these values for the three models:
+The equation requires estimates of the precision and false omission rate for the predictive model. We estimated these for each of the three models using Monte Carlo cross-validation (for more details, see our paper describing the development of these models: @anderson2015a). These are our estimates for these values for the three models:
 
 Model          | Precision   | False omission rate
 -------------- | ----------- | --------------------
@@ -330,13 +368,13 @@ exp_projs[sample(1:nrow(exp_projs), 6), ]
 ```
 
 ```
-##       prediction length      pop
-## 8383       other      3  2202854
-## 9876       other      3  1436263
-## 495         very      3  3341739
-## 1863        very      6 11150708
-## 508        other     28  3341739
-## 12515      other      3  1577879
+##       prediction length     pop
+## 4150       other     11  903850
+## 8774       other      5 1354340
+## 520        other      2 1792367
+## 4739       other      2 1448068
+## 12213      other      6 1396388
+## 6543       other      3  843380
 ```
 
 Now this dataframe can be used to calculate the person-days of exposure for each heatwave and then sum this exposure by predicted class of heatwave:
@@ -402,3 +440,5 @@ Model          | Precision   | False omission rate
 Tree model     | 0.5%        | 0.1%
 Bagging model  | 0.5%        | 0.1%
 Boosting model | 0.5%        | 0.1%
+
+# References
