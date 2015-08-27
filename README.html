@@ -458,12 +458,12 @@ unadj_counts</code></pre>
                         pop = proj_hws$pop100)
 exp_projs[sample(1:nrow(exp_projs), 6), ]</code></pre>
 <pre><code>##       prediction length     pop
-## 8704       other      4 1354340
-## 491        other     12 3341739
-## 9400       other      6 1947893
-## 10475      other      4  717063
-## 11380      other      2 1467742
-## 3206       other      2 4717478</code></pre>
+## 327         very     19 1170662
+## 4700       other      6 1448068
+## 4958       other      3  819611
+## 4123       other      5  903850
+## 10343      other      4 3715510
+## 8905       other      4 3208211</code></pre>
 <p>Now this dataframe can be used to calculate the person-days of exposure for each heatwave and then sum this exposure by predicted class of heatwave:</p>
 <pre class="r"><code>exp_projs &lt;- mutate(exp_projs, exposure = length * pop) %&gt;%
         group_by(prediction) %&gt;%
