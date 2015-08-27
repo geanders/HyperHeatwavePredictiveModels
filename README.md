@@ -7,9 +7,9 @@ output: html_document
 
 # Overview
 
-We have developed several predictive models to classify whether a heatwave is a hyper-heatwave, which we define as a heatwave associated with a 20% or higher increase in mortality risk in the community in which it occurs. The methods used to develop these models are fully described in a paper we are currently working on submitting. Once the paper is published, we will provide a link to the paper's web address.
+We have developed several predictive models to classify whether a heatwave is a hyper-heatwave, which we define as a heatwave associated with a 20% or higher increase in all-cause mortality risk in the community in which it occurs. The methods used to develop these models are fully described in a paper we are currently preparing to submit ([Reference]). Once the paper is published, we will provide a link to the paper's web address.
 
-This repository includes three main models, all of which use, as predictive variables, a variety of characteristics of the heatwave. These models are: 
+This repository includes three main models, all of which use, as predictive variables of whether a heatwave is a hyper-heatwave, a variety of characteristics of the heatwave. These models are: 
 
 Model           | File name
 --------------  | ----------
@@ -17,15 +17,15 @@ Tree model      | `unpr.tree.rose.RData`
 Bagging model   | `bag.tree.rose.RData`
 Boosting model  | `boost.tree.rose.RData`
 
-We have also included two example datasets to use to show how to use these models to explore trends in hyper-heatwaves. Those three datasets are:
+We have also included three example datasets that we use to show how to use these models can be used to explore trends in hyper-heatwaves. Those three datasets are:
 
 Dataset                                           | File name
 ------------------------------------------------- | ---------
-Projected heatwaves in 82 communities, 2061--2080 | `projected_heatwaves.txt`
-Projected populations in 82 communities, 2061--2080 | `projected_populations.csv`
-Land areas for 82 communities                      | `land_area.csv`
+Projected heatwaves in 82 US communities, 2061--2080 | `projected_heatwaves.txt`
+Projected populations in 82 US communities, 2061--2080 | `projected_populations.csv`
+Land areas for 82 US communities                      | `land_area.csv`
 
-We explain these files further below.
+We explain these files further [below](#example_data).
 
 Finally, for use in sensitivity analyses, we have included three health-based models developed using an alternative threshold of 19% to define hyper-heatwaves (i.e., a hyper-heatwave was defined as any heatwave associated with a 19% or higher increase in all-cause mortality risk in the community). These models are: 
 
@@ -34,6 +34,8 @@ Model           | File name
 Tree model      | `unpr.tree.rose19.RData`
 Bagging model   | `bag.tree.rose19.RData`
 Boosting model  | `boost.tree.rose19.RData`
+
+These models were developed as a part of a larger project on the Benefits of Reducing Anthropogenic Climate changE ([BRACE](https://chsp.ucar.edu/brace-benefits-reduced-anthropogenic-climate-change); O'Neill and Gettelman, in prep.), which focuses on characterizing the difference in impacts driven by climate outcomes resulting from the forcing associated with RCP 8.5 and 4.5.
 
 # Loading models into R
 
@@ -46,9 +48,11 @@ load("bag.tree.rose.RData")
 load("boost.tree.rose.RData")
 ```
 
-# Example data
+A full description of the development of these models is provided in [Anderson et al., in prep]. 
 
-We have included two example data files, to show how these models can be used to explore projected trends in hyper-heatwaves. Provided the datasets are saved in R's working directory, then can be read into an R session using the following code:
+# <a name="example_data"></a>Example data
+
+We have included three example data files, to show how these models can be used to explore projected trends in hyper-heatwaves. As long as the datasets are saved in R's working directory, they can be read into an R session using the following code:
 
 
 ```r
@@ -59,33 +63,33 @@ land_area <- read.csv("land_area.csv", header = TRUE)
 
 ### Projected heatwaves dataset
 
-The first file, `projected_heatwaves.txt`, is a dataset of all heatwaves projected in the 82 study communities considered in our paper for the years 2061--2080. These projections were generated using the National Center for Atmospheric Research's Community Earth System's Model (CESM). There are from the second ensemble member of a large-ensemble run of CESM (CESM-LE), under the Representative Concentration Pathway 8.5 emission scenario. 
+The first file, `projected_heatwaves.txt`, is a dataset of all heatwaves projected in the 82 study communities considered in our paper, covering the years 2061--2080. These projections were generated using the National Center for Atmospheric Research's Community Earth System Model (CESM). There are from the second ensemble member of a large-ensemble run of CESM (CESM-LE), under the Representative Concentration Pathway 8.5 emission scenario. 
 
 This dataset includes the following variables:
 
 Column name          | Meaning
 -------------------- | ----------------------------------
-city                 | Community in which heatwave occurred (abbreviation)
-start.date           | Calendar date of first day of the heatwave
-end.date             | Calendar date of last day of the heatwave
-mean.temp            | Average of daily mean temperature during the heatwave
-max.temp             | Highest daily mean temperature during the heatwave
-min.temp             | Lowest daily mean temperature during the heatwave
-length               | How many days the heatwave lasted
-start.doy            | Day in year that heatwave started
-start.month          | Month that heatwave started
-days.above.80        | Number of days in heatwave above 80F
-days.above.85        | Number of days in heatwave above 85F
-days.above.90        | Number of days in heatwave above 90F
-days.above.95        | Number of days in heatwave above 95F
-days.above.99th      | Number of days in heatwave above the community's 99th percentile temperature
-days.above.99.5th    | Number of days in heatwave above the community's 99.5th percentile temperature
-first.in.season      | Whether the heatwave was the first of the year to occur in its community 
-mean.temp.quantile   | Quantile of the average of daily mean temperature during the heatwave
-max.temp.quantile    | Quantile of the highest daily mean temperature during the heatwave
-min.temp.quantile    | Quantile of the lowest daily mean temperature during the heatwave
-mean.temp.1          | Average daily temperature in the community
-mean.summer.temp     | Average warm season temperature in the community
+city                 | Abbreviation for community in which heatwave occurred
+mean.temp            | Average of daily mean temperature during the heatwave (&deg;F)
+max.temp             | Highest daily mean temperature during the heatwave (&deg;F)
+min.temp             | Lowest daily mean temperature during the heatwave (&deg;F)
+length               | Length of the heatwave in days
+start.doy            | Day of year the heatwave started (e.g., Jan. 1 = 1; Feb. 1 = 32)
+start.month          | Month the heatwave started
+days.above.80        | Number of days in heatwave with mean temperature above 80&deg;F
+days.above.85        | Number of days in heatwave with mean temperature above 85&deg;F
+days.above.90        | Number of days in heatwave with mean temperature above 90&deg;F
+days.above.95        | Number of days in heatwave with mean temperature above 95&deg;F
+days.above.99th      | Number of days in heatwave with mean temperature above the community's 99<sup>th</sup> percentile of mean daily temperature
+days.above.99.5th    | Number of days in heatwave with mean temperature above the community's 99.5<sup>th</sup> percentile of mean daily temperature
+first.in.season      | Whether the heatwave was the first of the year in its community 
+mean.temp.quantile   | Quantile of the average of daily mean temperature during the heatwave compared to the community's year-round temperature distribution
+max.temp.quantile    | Quantile of the highest daily mean temperature during the heatwave compared to the community's year-round temperature distribution
+min.temp.quantile    | Quantile of the lowest daily mean temperature during the heatwave compared to the community's year-round temperature distribution
+mean.temp.1          | Average daily temperature in the community in which the heatwave occurred
+mean.summer.temp     | Average warm season (May--September) temperature in the community in which the heatwave occurred
+
+[Something here about adaptation scenario in the example data.]
 
 Full details on the creation of this dataset are available in Oleson et al. 2015. 
 
@@ -160,14 +164,13 @@ colnames(proj_hws)
 ```
 
 ```
-##  [1] "city"               "start.date"         "end.date"          
-##  [4] "mean.temp"          "max.temp"           "min.temp"          
-##  [7] "length"             "start.doy"          "start.month"       
-## [10] "days.above.80"      "days.above.85"      "days.above.90"     
-## [13] "days.above.95"      "days.above.99th"    "days.above.99.5th" 
-## [16] "first.in.season"    "mean.temp.quantile" "max.temp.quantile" 
-## [19] "min.temp.quantile"  "mean.temp.1"        "mean.summer.temp"  
-## [22] "pop100"             "pop.density"
+##  [1] "city"               "mean.temp"          "max.temp"          
+##  [4] "min.temp"           "length"             "start.doy"         
+##  [7] "start.month"        "days.above.80"      "days.above.85"     
+## [10] "days.above.90"      "days.above.95"      "days.above.99th"   
+## [13] "days.above.99.5th"  "first.in.season"    "mean.temp.quantile"
+## [16] "max.temp.quantile"  "min.temp.quantile"  "mean.temp.1"       
+## [19] "mean.summer.temp"   "pop100"             "pop.density"
 ```
 
 To use these health-based models for a dataset of heatwaves, it is important that all the same variables be calculated for the heatwaves and that they be saved using the same column names as those used here. This is how the health-based models will recognize the heatwave characteristics required to predict from the model.
@@ -327,13 +330,13 @@ exp_projs[sample(1:nrow(exp_projs), 6), ]
 ```
 
 ```
-##       prediction length     pop
-## 10947      other      2 1069781
-## 9451       other      2 1733272
-## 5515        very     35  870892
-## 10828      other      3  384927
-## 11348      other      2  819072
-## 4596       other     10  878748
+##      prediction length     pop
+## 2607       very     13 5271247
+## 1852      other      3 6370140
+## 5982      other      4 2628754
+## 944       other      2  819231
+## 5546      other      2  870892
+## 2275      other      4 1676978
 ```
 
 Now this dataframe can be used to calculate the person-days of exposure for each heatwave and sum this exposure by predicted class of heatwave:
