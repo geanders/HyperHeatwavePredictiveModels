@@ -181,7 +181,18 @@ Once a heatwave dataset is in the correct format, the models can be applied to t
 
 ### Generating predictions from the models
 
-To have access to prediction methods for the three models, it is necessary to load the following three R packages:
+To have access to prediction methods for the three models, it is necessary to load three R packages, `tree`, `randomForest`, and `gbm`. If you do not already have these installed on your computer, you will need to install them using the following code:
+
+
+```r
+install.packages(tree)
+install.packages(randomForest)
+install.packages(gbm)
+```
+
+*Note: If you have an Intel system, you may need to load the MKL module on your system before you can install and run the `randomForest` package.*
+
+Once you have the packages installed, you can load them in your R session using:
 
 
 ```r
@@ -326,17 +337,18 @@ First, it's necessary to combine the model predictions with data from the heatwa
 exp_projs <- data.frame(prediction = projs_bag,
                         length = proj_hws$length,
                         pop = proj_hws$pop100)
+set.seed(16)
 exp_projs[sample(1:nrow(exp_projs), 6), ]
 ```
 
 ```
 ##       prediction length     pop
-## 11865      other      7 1760343
-## 9669       other      5 3673734
-## 2086        very     30 1869992
-## 11134      other      2  964992
-## 7483       other      4 1432184
-## 12503      other      4 1577879
+## 8577       other      6 1307517
+## 3065       other     13  837326
+## 5651       other      2  873537
+## 2880       other      4 2842486
+## 10838      other      5  674357
+## 3906        very     32 1261938
 ```
 
 Now this dataframe can be used to calculate the person-days of exposure for each heatwave and then sum this exposure by predicted class of heatwave:

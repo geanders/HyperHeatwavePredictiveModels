@@ -352,7 +352,12 @@ head(proj_pops)</code></pre>
 <p>Once a heatwave dataset is in the correct format, the models can be applied to the dataset to predict which heatwaves are likely to be hyper-heatwaves, based on these heatwave characterstics. Since the models generate a lot of false positives, the total number of projected hyper-heatwaves will then need to be adjusted to account for the models’ precision (estimate of the percent of all heatwaves that are predicted by the model to be hyper-heatwaves that actually are hyper-heatwaves; see Anderson et al. 2015a).</p>
 <div id="generating-predictions-from-the-models" class="section level3">
 <h3>Generating predictions from the models</h3>
-<p>To have access to prediction methods for the three models, it is necessary to load the following three R packages:</p>
+<p>To have access to prediction methods for the three models, it is necessary to load three R packages, <code>tree</code>, <code>randomForest</code>, and <code>gbm</code>. If you do not already have these installed on your computer, you will need to install them using the following code:</p>
+<pre class="r"><code>install.packages(tree)
+install.packages(randomForest)
+install.packages(gbm)</code></pre>
+<p><em>Note: If you have an Intel system, you may need to load the MKL module on your system before you can install and run the <code>randomForest</code> package.</em></p>
+<p>Once you have the packages installed, you can load them in your R session using:</p>
 <pre class="r"><code>library(tree)
 library(randomForest)
 library(gbm)</code></pre>
@@ -456,14 +461,15 @@ unadj_counts</code></pre>
 <pre class="r"><code>exp_projs &lt;- data.frame(prediction = projs_bag,
                         length = proj_hws$length,
                         pop = proj_hws$pop100)
+set.seed(16)
 exp_projs[sample(1:nrow(exp_projs), 6), ]</code></pre>
 <pre><code>##       prediction length     pop
-## 6536       other      2  843380
-## 408        other      3 3341739
-## 11263      other      3  964992
-## 7365       other      2 3096896
-## 7949       other      6 3136902
-## 4797       other      2 2116575</code></pre>
+## 8577       other      6 1307517
+## 3065       other     13  837326
+## 5651       other      2  873537
+## 2880       other      4 2842486
+## 10838      other      5  674357
+## 3906        very     32 1261938</code></pre>
 <p>Now this dataframe can be used to calculate the person-days of exposure for each heatwave and then sum this exposure by predicted class of heatwave:</p>
 <pre class="r"><code>exp_projs &lt;- mutate(exp_projs, exposure = length * pop) %&gt;%
         group_by(prediction) %&gt;%
