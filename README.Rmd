@@ -1,5 +1,5 @@
 ---
-title: "Hyper-heatwave predictive models"
+title: "High-mortality heatwave predictive models"
 author: "G. Brooke Anderson, Keith Oleson, Bryan Jones, Roger D. Peng"
 date: "August 25, 2015"
 output: html_document
@@ -7,9 +7,9 @@ output: html_document
 
 # Overview
 
-We have developed several predictive models to classify whether a heatwave is a hyper-heatwave, which we define as a heatwave associated with a 20% or higher increase in all-cause mortality risk in the community in which it occurs. The methods used to develop these models are fully described in a paper we are currently preparing to submit (Anderson et al. 2015a), and projections created using the models under different future scenarios are given in another paper we are preparing to submit (Anderson et al. 2015b). Once the papers are published, we will provide links.
+We have developed several predictive models to classify whether a heatwave is high-mortality, which we define as a heatwave associated with a 20% or higher increase in all-cause mortality risk in the community in which it occurs. The methods used to develop these models are fully described in a paper we are currently preparing to submit (Anderson et al. 2015a), and projections created using the models under different future scenarios are given in another paper we are preparing to submit (Anderson et al. 2015b). Once the papers are published, we will provide links.
 
-This repository includes three main models, all of which use, as predictive variables of whether a heatwave is a hyper-heatwave, a variety of characteristics of the heatwave. These models are: 
+This repository includes three main models, all of which use, as predictive variables of whether a heatwave is high-mortality, a variety of characteristics of the heatwave. These models are: 
 
 Model           | File name
 --------------  | ----------
@@ -17,7 +17,7 @@ Tree model      | `unpr.tree.rose.RData`
 Bagging model   | `bag.tree.rose.RData`
 Boosting model  | `boost.tree.rose.RData`
 
-We have also included three example datasets that we use to show how to use these models can be used to explore trends in hyper-heatwaves. Those three datasets are:
+We have also included three example datasets that we use to show how to use these models can be used to explore trends in high-mortality heatwaves. Those three datasets are:
 
 Dataset                                           | File name
 ------------------------------------------------- | ---------
@@ -27,7 +27,7 @@ Land areas for 82 US communities                      | `land_area.csv`
 
 We explain these files further [below](#example_data).
 
-Finally, for use in sensitivity analyses, we have included three health-based models developed using an alternative threshold of 19% to define hyper-heatwaves (i.e., a hyper-heatwave was defined as any heatwave associated with a 19% or higher increase in all-cause mortality risk in the community). These models are: 
+Finally, for use in sensitivity analyses, we have included three health-based models developed using an alternative threshold of 19% to define high-mortality heatwaves (i.e., a high-mortality heatwave was defined as any heatwave associated with a 19% or higher increase in all-cause mortality risk in the community). These models are: 
 
 Model           | File name
 --------------  | ----------
@@ -51,7 +51,7 @@ A full description of the development of these models is provided in Anderson et
 
 # <a name="example_data"></a>Example data
 
-We have included three example data files, to show how these models can be used to explore projected trends in hyper-heatwaves. As long as the datasets are saved in R's working directory, they can be read into an R session using the following code:
+We have included three example data files, to show how these models can be used to explore projected trends in high-mortality heatwaves. As long as the datasets are saved in R's working directory, they can be read into an R session using the following code:
 
 ```{r}
 proj_hws <- read.table("projected_heatwaves.txt", header = TRUE)
@@ -150,7 +150,7 @@ To use these health-based models for a dataset of heatwaves, it is important tha
 
 # Using the models
 
-Once a heatwave dataset is in the correct format, the models can be applied to the dataset to predict which heatwaves are likely to be hyper-heatwaves, based on these heatwave characterstics. Since the models generate a lot of false positives, the total number of projected hyper-heatwaves will then need to be adjusted to account for the models' precision (estimate of the percent of all heatwaves that are predicted by the model to be hyper-heatwaves that actually are hyper-heatwaves; see Anderson et al. 2015a). 
+Once a heatwave dataset is in the correct format, the models can be applied to the dataset to predict which heatwaves are likely to be high-mortality heatwaves, based on these heatwave characterstics. Since the models generate a lot of false positives, the total number of projected high-mortality heatwaves will then need to be adjusted to account for the models' precision (estimate of the percent of all heatwaves that are predicted by the model to be high-mortality heatwaves that actually are high-mortality; see Anderson et al. 2015a). 
 
 ### Generating predictions from the models
 
@@ -187,7 +187,7 @@ projs_boost <- predict(boost.tree.rose,
                        n.trees = 500)
 ```
 
-The methods for these three models differ somewhat, and as a result, the prediction calls differ and the predictive output differs in format. For example, while the predictions from the tree and bagging models are a string of predictions for the heatwaves-- either "very" if the heatwave is predicted to be a hyper-heatwave or "other" otherwise-- the predictions from the boosting model are numeric: 
+The methods for these three models differ somewhat, and as a result, the prediction calls differ and the predictive output differs in format. For example, while the predictions from the tree and bagging models are a string of predictions for the heatwaves-- either "very" if the heatwave is predicted to be a high-mortality heatwave or "other" otherwise-- the predictions from the boosting model are numeric: 
 
 ```{r}
 head(projs_tree)
@@ -202,16 +202,16 @@ projs_boost <- factor(ifelse(projs_boost > 0, "very", "other"))
 head(projs_boost)
 ```
 
-### Estimating hyper-heatwave frequency from the predictions
+### Estimating high-mortality heatwave frequency from the predictions
 
-The following equations can be used to estimate the total number of hyper-heatwaves projected within a dataset of heatwaves: 
+The following equations can be used to estimate the total number of high-mortality heatwaves projected within a dataset of heatwaves: 
 
 $$ H_{h} = H_{ph} * P + H_{pl} * F $$
 
 where: 
 
-- $H_{h}$ is the estimated number of hyper-heatwaves
-- $H_{ph}$ is the number of heatwaves predicted by the model to be hyper-heatwaves
+- $H_{h}$ is the estimated number of high-mortality heatwaves
+- $H_{ph}$ is the number of heatwaves predicted by the model to be high-mortality
 - $P$ is the model's estimated precision
 - $H_{pl}$ is the number of heatwaves predicted by the model to be less dangerous heatwaves
 - $F$ is the model's estimated false omission rate
@@ -237,19 +237,19 @@ unadj_counts
 sum(unadj_counts * adjustment_rates)
 ```
 
-Based on this calculation, our projection for this set of scenarios is that we would expect around `r round(sum(unadj_counts * adjustment_rates))` hyper-heatwaves in the 82 study communities for 2061--2080. 
+Based on this calculation, our projection for this set of scenarios is that we would expect around `r round(sum(unadj_counts * adjustment_rates))` high-mortality heatwaves in the 82 study communities for 2061--2080. 
 
-### Estimating hyper-heatwave frequency from the predictions
+### Estimating high-mortality heatwave exposure from the predictions
 
-Exposure to hyper-heatwaves combines both the frequency of such heatwaves with projections of how long they will last and how many people will be living in the affected community. The following equation can be used to project hyper-heatwave exposure using the predictions from our health-based models: 
+Exposure to high-mortality heatwaves combines both the frequency of such heatwaves with projections of how long they will last and how many people will be living in the affected community. The following equation can be used to project high-mortality heatwave exposure using the predictions from our health-based models: 
 
 $$ E_{h} = P\sum_{i}(D_{i}N_{i}) + F\sum_{j}(D_{j}N_{j}) $$
 
 where: 
 
-- $E_{h}$ is the estimated exposure to hyper-heatwaves, in person-days
+- $E_{h}$ is the estimated exposure to high-mortality heatwaves, in person-days
 - $P$ is the model's estimated precision
-- $i$ indexes across all heatwaves classified as hyper-heatwaves by the predictive model
+- $i$ indexes across all heatwaves classified as high-mortality heatwaves by the predictive model
 - $D_{i}$ is the length of heatwave $i$ in days
 - $N_{i}$ is the population of the community in which heatwave $i$ occurs
 - $F$ is the model's estimated false omission rate
@@ -257,7 +257,7 @@ where:
 - $D_{j}$ is the length of heatwave $j$ in days
 - $N_{j}$ is the population of the community in which heatwave $j$ occurs
 
-The following code gives an example of how exposure to hyper-heatwaves could be estimated in R using the predictions from the bagging model, `projs_bag`.
+The following code gives an example of how exposure to high-mortality heatwaves could be estimated in R using the predictions from the bagging model, `projs_bag`.
 
 First, it's necessary to combine the model predictions with data from the heatwave dataset on heatwave length and population of the community in which the heatwave occurred:
 
@@ -290,15 +290,15 @@ This number can also be presented in units of millions of person-days per year (
 sum(exp_projs$exposure * adjustment_rates) / 10^6 / 20
 ```
 
-For this combination of ensemble member, emission scenario, and population scenario, our estimated projection of exposure to hyper-heatwaves is `r round(sum(exp_projs$exposure * adjustment_rates) / 10^6 / 20)` million person-days per year across the 82 study communities.
+For this combination of ensemble member, emission scenario, and population scenario, our estimated projection of exposure to high-mortality heatwaves is `r round(sum(exp_projs$exposure * adjustment_rates) / 10^6 / 20)` million person-days per year across the 82 study communities.
 
 ## Using the sensitivity analysis models
 
-Projections of trends in hyper-heatwaves could be sensitive to the threshold used to define a hyper-heatwave. Our main models were developed using the definition that a hyper-heatwave was a heatwave associated with a 20% or greater increase in all-cause mortality risk.
+Projections of trends in high-mortality heatwaves could be sensitive to the threshold used to define a high-mortality heatwave. Our main models were developed using the definition that a high-mortality heatwave was a heatwave associated with a 20% or greater increase in all-cause mortality risk.
 
-As a sensitivity analysis, we investigated alternative definitions: we considered using thresholds of 19% and 21% increase in mortality risk to define hyper-heatwaves. Models were unchanged with the 21% threshold definition because no heatwaves in the training dataset fell between 20% and 21% increase in mortality risk. 
+As a sensitivity analysis, we investigated alternative definitions: we considered using thresholds of 19% and 21% increase in mortality risk to define high-mortality heatwaves. Models were unchanged with the 21% threshold definition because no heatwaves in the training dataset fell between 20% and 21% increase in mortality risk. 
 
-However, some heatwaves did fall between the 19% and 20% threshold values, and so we generated different models, to use in sensitivity analyses, based on the 19% threshold definition of a hyper-heatwave. These models are available in the following files:
+However, some heatwaves did fall between the 19% and 20% threshold values, and so we generated different models, to use in sensitivity analyses, based on the 19% threshold definition of a high-mortality heatwave. These models are available in the following files:
 
 Model           | File name
 --------------  | ----------
@@ -316,9 +316,9 @@ Boosting model | 0.5%        | 0.1%
 
 # References
 
- Anderson, Oleson, Jones, and Peng. 2015a. Predicting hyper-heatwaves: Developing health-based models to predict whether a heatwave is likely a hyper-heatwave or a less dangerous heatwave based on its characteristics. *Climatic Change* (In prep.).
+ Anderson, Oleson, Jones, and Peng. 2015a. Predicting high-mortality heatwaves: Developing health-based models to predict whether a heatwave is likely high-mortality or less dangerous based on its characteristics. *Climatic Change* (In prep.).
   
-Anderson, Oleson, Jones, and Peng. 2015b. Hyper-heatwaves and health in a changing future-- Projecting frequency of high-mortality heatwaves in 82 US communities in 2061--2080 under different climate, population, and adaptation scenarios. *Climatic Change* (In prep.).
+Anderson, Oleson, Jones, and Peng. 2015b. High-mortality heatwaves and health in a changing future: Projecting frequency of and exposure to high-mortality heatwaves in 82 US communities in 2061--2080 under different climate, population, and adaptation scenarios. *Climatic Change* (In prep.).
 
 Oleson, Anderson, Jones, McGinnis, and Sanderson. 2015. Avoided climate impacts of urban and rural heat and cold waves over the U.S. using large climate model ensembles for RCP8.5 and RCP4.5. *Climatic Change* (In press).
   
