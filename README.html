@@ -141,6 +141,7 @@ img {
 </tr>
 </tbody>
 </table>
+<p>We have also, for use in sensitivity analysis, included code for a function to fit a simplified custom tree model, based on the main tree model, but with the heatwave’s starting date excluded as a predictor (for full explanation, see the Discussion of Anderson et al. 2015a).</p>
 <p>These models were developed as a part of a larger project on the Benefits of Reducing Anthropogenic Climate changE (<a href="https://chsp.ucar.edu/brace-benefits-reduced-anthropogenic-climate-change">BRACE</a>), which focuses on characterizing the difference in impacts driven by climate outcomes resulting from the forcing associated with RCP 8.5 and 4.5.</p>
 </div>
 <div id="loading-models-into-r" class="section level1">
@@ -544,13 +545,27 @@ exp_projs</code></pre>
 </tr>
 </tbody>
 </table>
+<p>The simplified custom model, which is based on the main tree model but excludes starting month as a predictor, can be used to predict using the following function:</p>
+<pre class="r"><code>custom_tree &lt;- function(max.temp.quantile){
+        if(max.temp.quantile &gt;= 0.9989){
+                prediction &lt;- &quot;very&quot;
+        } else {
+                prediction &lt;- &quot;other&quot;
+        }
+        return(prediction)
+}</code></pre>
+<p>This model can be applied to a vector of heatwave relative maximum daily temperature values to generate predictions:</p>
+<pre class="r"><code>proj_custom &lt;- sapply(proj_hws$max.temp.quantile, custom_tree)
+head(proj_custom)</code></pre>
+<pre><code>## [1] &quot;other&quot; &quot;very&quot;  &quot;other&quot; &quot;other&quot; &quot;other&quot; &quot;other&quot;</code></pre>
+<p>In the training data, this model had a precision of 1.2% and false omission rate of 0%; these values can be used to adjust predictions as for the main models.</p>
 </div>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
 <p>Anderson, Oleson, Jones, and Peng. 2015a. Predicting high-mortality heatwaves: Developing health-based models to predict whether a heatwave is likely high-mortality or less dangerous based on its characteristics. <em>Climatic Change</em> (In prep.).</p>
 <p>Anderson, Oleson, Jones, and Peng. 2015b. High-mortality heatwaves and health in a changing future: Projecting frequency of and exposure to high-mortality heatwaves in 82 US communities in 2061–2080 under different climate, population, and adaptation scenarios. <em>Climatic Change</em> (In prep.).</p>
-<p>Oleson, Anderson, Jones, McGinnis, and Sanderson. 2015. Avoided climate impacts of urban and rural heat and cold waves over the U.S. using large climate model ensembles for RCP8.5 and RCP4.5. <em>Climatic Change</em> (In press).</p>
+<p>Oleson, Anderson, Jones, McGinnis, and Sanderson. 2015. Avoided climate impacts of urban and rural heat and cold waves over the U.S. using large climate model ensembles for RCP8.5 and RCP4.5. <em>Climatic Change</em> 2015 doi: 10.1007/s10584-015-1504-1.</p>
 </div>
 
 

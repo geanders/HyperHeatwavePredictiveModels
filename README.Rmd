@@ -35,6 +35,8 @@ Tree model      | `unpr.tree.rose19.RData`
 Bagging model   | `bag.tree.rose19.RData`
 Boosting model  | `boost.tree.rose19.RData`
 
+We have also, for use in sensitivity analysis, included code for a function to fit a simplified custom tree model, based on the main tree model, but with the heatwave's starting date excluded as a predictor (for full explanation, see the Discussion of Anderson et al. 2015a).
+
 These models were developed as a part of a larger project on the Benefits of Reducing Anthropogenic Climate changE ([BRACE](https://chsp.ucar.edu/brace-benefits-reduced-anthropogenic-climate-change)), which focuses on characterizing the difference in impacts driven by climate outcomes resulting from the forcing associated with RCP 8.5 and 4.5. 
 
 # Loading models into R
@@ -314,11 +316,33 @@ Tree model     | 0.5%        | 0.1%
 Bagging model  | 0.5%        | 0.1%
 Boosting model | 0.5%        | 0.1%
 
+The simplified custom model, which is based on the main tree model but excludes starting month as a predictor, can be used to predict using the following function:
+
+```{r}
+custom_tree <- function(max.temp.quantile){
+        if(max.temp.quantile >= 0.9989){
+                prediction <- "very"
+        } else {
+                prediction <- "other"
+        }
+        return(prediction)
+}
+```
+
+This model can be applied to a vector of heatwave relative maximum daily temperature values to generate predictions:
+
+```{r}
+proj_custom <- sapply(proj_hws$max.temp.quantile, custom_tree)
+head(proj_custom)
+```
+
+In the training data, this model had a precision of 1.2% and false omission rate of 0%; these values can be used to adjust predictions as for the main models.
+
 # References
 
  Anderson, Oleson, Jones, and Peng. 2015a. Predicting high-mortality heatwaves: Developing health-based models to predict whether a heatwave is likely high-mortality or less dangerous based on its characteristics. *Climatic Change* (In prep.).
   
 Anderson, Oleson, Jones, and Peng. 2015b. High-mortality heatwaves and health in a changing future: Projecting frequency of and exposure to high-mortality heatwaves in 82 US communities in 2061--2080 under different climate, population, and adaptation scenarios. *Climatic Change* (In prep.).
 
-Oleson, Anderson, Jones, McGinnis, and Sanderson. 2015. Avoided climate impacts of urban and rural heat and cold waves over the U.S. using large climate model ensembles for RCP8.5 and RCP4.5. *Climatic Change* (In press).
+Oleson, Anderson, Jones, McGinnis, and Sanderson. 2015. Avoided climate impacts of urban and rural heat and cold waves over the U.S. using large climate model ensembles for RCP8.5 and RCP4.5. *Climatic Change* 2015 doi: 10.1007/s10584-015-1504-1.
   
