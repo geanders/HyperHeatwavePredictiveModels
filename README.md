@@ -271,6 +271,9 @@ head(projs_boost)
 
 The following equations can be used to estimate the total number of high-mortality heatwaves projected within a dataset of heatwaves: 
 
+![](eq_figures/equation_1.png)
+
+<!---
 $$ H_{h} = H_{ph} * P + H_{pl} * F $$
 
 where: 
@@ -280,6 +283,7 @@ where:
 - $P$ is the model's estimated precision
 - $H_{pl}$ is the number of heatwaves predicted by the model to be less dangerous heatwaves
 - $F$ is the model's estimated false omission rate
+--->
 
 This equation takes the total number of heatwaves that the model predicts to belong to each class and adjusts these values by estimates of the model's precision and false omission rate. 
 
@@ -321,6 +325,9 @@ Based on this calculation, our projection for this set of scenarios is that we w
 
 Exposure to high-mortality heatwaves combines both the frequency of such heatwaves with projections of how long they will last and how many people will be living in the affected community. The following equation can be used to project high-mortality heatwave exposure using the predictions from our health-based models: 
 
+![](eq_figures/equation_2.png)
+
+<!---
 $$ E_{h} = P\sum_{i}(D_{i}N_{i}) + F\sum_{j}(D_{j}N_{j}) $$
 
 where: 
@@ -334,6 +341,7 @@ where:
 - $j$ indexes across all heatwaves classified as less dangerous heatwaves by the predictive model
 - $D_{j}$ is the length of heatwave $j$ in days
 - $N_{j}$ is the population of the community in which heatwave $j$ occurs
+--->
 
 The following code gives an example of how exposure to high-mortality heatwaves could be estimated in R using the predictions from the bagging model, `projs_bag`.
 
