@@ -1,7 +1,7 @@
 ---
 title: "High-mortality heatwave predictive models"
 author: "G. Brooke Anderson, Keith Oleson, Bryan Jones, Roger D. Peng"
-output: html_document
+output: md_document
 ---
 
 # Overview
