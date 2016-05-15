@@ -1,7 +1,6 @@
 ---
 title: "High-mortality heatwave predictive models"
 author: "G. Brooke Anderson, Keith Oleson, Bryan Jones, Roger D. Peng"
-date: "August 25, 2015"
 output: html_document
 ---
 
@@ -152,7 +151,7 @@ To use these health-based models for a dataset of heatwaves, it is important tha
 
 # Using the models
 
-Once a heatwave dataset is in the correct format, the models can be applied to the dataset to predict which heatwaves are likely to be high-mortality heatwaves, based on these heatwave characterstics. Since the models generate a lot of false positives, the total number of projected high-mortality heatwaves will then need to be adjusted to account for the models' precision (estimate of the percent of all heatwaves that are predicted by the model to be high-mortality heatwaves that actually are high-mortality; see Anderson et al. 2015a). 
+Once a heatwave dataset is in the correct format, the models can be applied to the dataset to predict which heatwaves are likely to be high-mortality heatwaves, based on these heatwave characterstics. Since the models generate a lot of false positives, the total number of projected high-mortality heatwaves will then need to be adjusted to account for the models' positive predictive value (estimate of the percent of all heatwaves that are predicted by the model to be high-mortality heatwaves that actually are high-mortality; see Anderson et al. 2015a). 
 
 ### Generating predictions from the models
 
@@ -211,28 +210,44 @@ The following equations can be used to estimate the total number of high-mortali
 ![](eq_figures/equation_1.png)
 
 <!---
-$$ H_{h} = H_{ph} * P + H_{pl} * F $$
+$$ H_{h} = H_{ph} * P + H_{pm} * F $$
 
 where: 
 
 - $H_{h}$ is the estimated number of high-mortality heatwaves
 - $H_{ph}$ is the number of heatwaves predicted by the model to be high-mortality
-- $P$ is the model's estimated precision
-- $H_{pl}$ is the number of heatwaves predicted by the model to be less dangerous heatwaves
+- $P$ is the model's estimated positive predictive value
+- $H_{pm}$ is the number of heatwaves predicted by the model to be moderate heatwaves
 - $F$ is the model's estimated false omission rate
 --->
 
-This equation takes the total number of heatwaves that the model predicts to belong to each class and adjusts these values by estimates of the model's precision and false omission rate. 
+Similarly, the number of moderate heatwaves can be estimated as: 
 
-The equation requires estimates of the precision and false omission rate for the predictive model. We estimated these for each of the three models using Monte Carlo cross-validation (for more details, see our paper describing the development of these models: @anderson2015a). These are our estimates for these values for the three models:
+![](eq_figures/equation_1a.png)
 
-Model          | Precision   | False omission rate
+<!---
+$$ H_{m} = (1 - P)H_{ph}  + (1 - F)H_{pm} $$
+
+where: 
+
+- $H_{h}$ is the estimated number of high-mortality heatwaves
+- $H_{ph}$ is the number of heatwaves predicted by the model to be high-mortality
+- $P$ is the model's estimated positive predictive value
+- $H_{pm}$ is the number of heatwaves predicted by the model to be moderate heatwaves
+- $F$ is the model's estimated false omission rate
+--->
+
+This equation takes the total number of heatwaves that the model predicts to belong to each class and adjusts these values by estimates of the model's positive predictive value and false omission rate. 
+
+The equation requires estimates of the positive predictive value and false omission rate for the predictive model. We estimated these for each of the three models using Monte Carlo cross-validation (for more details, see our paper describing the development of these models: @anderson2015a). These are our estimates for these values for the three models:
+
+Model          | Positive predictive value   | False omission rate
 -------------- | ----------- | --------------------
 Tree model     | 2.6%        | 0.0%
 Bagging model  | 2.6%        | 0.0%
 Boosting model | 2.3%        | 0.0%
 
-Here is an example of how to apply this equation to projections from the bagging model. First, a vector is created that has the adjustment rates (false omission rates and precision rates). 
+Here is an example of how to apply this equation to projections from the bagging model. First, a vector is created that has the adjustment rates (false omission rates and positive predictive value rates). 
 
 ```{r}
 adjustment_rates <- c(0.0, 2.6) / 100
@@ -249,6 +264,7 @@ Based on this calculation, our projection for this set of scenarios is that we w
 
 Exposure to high-mortality heatwaves combines both the frequency of such heatwaves with projections of how long they will last and how many people will be living in the affected community. The following equation can be used to project high-mortality heatwave exposure using the predictions from our health-based models: 
 
+
 ![](eq_figures/equation_2.png)
 
 <!---
@@ -257,12 +273,32 @@ $$ E_{h} = P\sum_{i}(D_{i}N_{i}) + F\sum_{j}(D_{j}N_{j}) $$
 where: 
 
 - $E_{h}$ is the estimated exposure to high-mortality heatwaves, in person-days
-- $P$ is the model's estimated precision
+- $P$ is the model's estimated positive predictive value
 - $i$ indexes across all heatwaves classified as high-mortality heatwaves by the predictive model
 - $D_{i}$ is the length of heatwave $i$ in days
 - $N_{i}$ is the population of the community in which heatwave $i$ occurs
 - $F$ is the model's estimated false omission rate
-- $j$ indexes across all heatwaves classified as less dangerous heatwaves by the predictive model
+- $j$ indexes across all heatwaves classified as moderate heatwaves by the predictive model
+- $D_{j}$ is the length of heatwave $j$ in days
+- $N_{j}$ is the population of the community in which heatwave $j$ occurs
+--->
+
+Similarly, exposure to moderate heatwaves can be estimated as: 
+
+![](eq_figures/equation_2a.png)
+
+<!---
+$$ E_{m} = (1-P)\sum_{i}(D_{i}N_{i}) + (1-F)\sum_{j}(D_{j}N_{j}) $$
+
+where: 
+
+- $E_{m}$ is the estimated exposure to high-mortality heatwaves, in person-days
+- $P$ is the model's estimated positive predictive value
+- $i$ indexes across all heatwaves classified as high-mortality heatwaves by the predictive model
+- $D_{i}$ is the length of heatwave $i$ in days
+- $N_{i}$ is the population of the community in which heatwave $i$ occurs
+- $F$ is the model's estimated false omission rate
+- $j$ indexes across all heatwaves classified as moderate heatwaves by the predictive model
 - $D_{j}$ is the length of heatwave $j$ in days
 - $N_{j}$ is the population of the community in which heatwave $j$ occurs
 --->
@@ -288,7 +324,7 @@ exp_projs <- mutate(exp_projs, exposure = length * pop) %>%
 exp_projs
 ```
 
-The estimated exposure can now be calculated by adjusting these two values for the model's estimated precision and false omission rates (saved in earlier code as `adjustment_rates`):
+The estimated exposure can now be calculated by adjusting these two values for the model's estimated positive predictive value and false omission rates (saved in earlier code as `adjustment_rates`):
 
 ```{r}
 sum(exp_projs$exposure * adjustment_rates)
@@ -316,9 +352,9 @@ Tree model      | `unpr.tree.rose19.RData`
 Bagging model   | `bag.tree.rose19.RData`
 Boosting model  | `boost.tree.rose19.RData`
 
-They can be loaded and used in the same way as the main models. Here are the estimated precision and false omission rates for these three models, which are needed in the equations described earlier:
+They can be loaded and used in the same way as the main models. Here are the estimated positive predictive value and false omission rates for these three models, which are needed in the equations described earlier:
 
-Model          | Precision   | False omission rate
+Model          | positive predictive value   | False omission rate
 -------------- | ----------- | --------------------
 Tree model     | 0.5%        | 0.1%
 Bagging model  | 0.5%        | 0.1%
@@ -344,13 +380,13 @@ proj_custom <- sapply(proj_hws$max.temp.quantile, custom_tree)
 head(proj_custom)
 ```
 
-In the training data, this model had a precision of 1.2% and false omission rate of 0%; these values can be used to adjust predictions as for the main models.
+In the training data, this model had a positive predictive value of 1.2% and false omission rate of 0%; these values can be used to adjust predictions as for the main models.
 
 # References
 
- Anderson, Oleson, Jones, and Peng. 2015a. Predicting high-mortality heatwaves: Developing health-based models to predict whether a heatwave is likely high-mortality or less dangerous based on its characteristics. *Climatic Change* (In prep.).
+ Anderson, Oleson, Jones, and Peng. 2015a. Classifying heatwaves: Developing health-based models to predict whether a United States heatwave is high-mortality or moderate based on its intensity, timing, community climate, and other heatwave characteristics. *Climatic Change* (Submitted).
   
-Anderson, Oleson, Jones, and Peng. 2015b. High-mortality heatwaves and health in a changing future: Projecting frequency of and exposure to high-mortality heatwaves in 82 US communities in 2061--2080 under different climate, population, and adaptation scenarios. *Climatic Change* (In prep.).
+Anderson, Oleson, Jones, and Peng. 2015b. High-mortality heatwaves and health in a changing future: Projecting frequency of and exposure to high-mortality heatwaves in 82 US communities in 2061--2080 under different climate, population, and adaptation scenarios. *Climatic Change* (Submitted).
 
 Oleson, Anderson, Jones, McGinnis, and Sanderson. 2015. Avoided climate impacts of urban and rural heat and cold waves over the U.S. using large climate model ensembles for RCP8.5 and RCP4.5. *Climatic Change* 2015 doi: 10.1007/s10584-015-1504-1.
   
