@@ -773,13 +773,13 @@ Anderson, Oleson, Jones, and Peng. 2015a. Classifying heatwaves:
 Developing health-based models to predict whether a United States
 heatwave is high-mortality or moderate based on its intensity, timing,
 community climate, and other heatwave characteristics. *Climatic Change*
-(Submitted).
+(In press).
 
 Anderson, Oleson, Jones, and Peng. 2015b. High-mortality heatwaves and
 health in a changing future: Projecting frequency of and exposure to
 high-mortality heatwaves in 82 US communities in 2061--2080 under
 different climate, population, and adaptation scenarios. *Climatic
-Change* (Submitted).
+Change* (In press).
 
 Oleson, Anderson, Jones, McGinnis, and Sanderson. 2015. Avoided climate
 impacts of urban and rural heat and cold waves over the U.S. using large
