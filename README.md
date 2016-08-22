@@ -769,11 +769,11 @@ predictions as for the main models.
 References
 ==========
 
- Anderson, Oleson, Jones, and Peng. 2015a. Classifying heatwaves: 
+ Anderson, Oleson, Jones, and Peng. 2016a. Classifying heatwaves: 
  Developing health-based models to predict high-mortality versus 
  moderate United States heatwaves. *Climatic Change* (In press).
   
-Anderson, Oleson, Jones, and Peng. 2015b. Projected trends in 
+Anderson, Oleson, Jones, and Peng. 2016b. Projected trends in 
 high-mortality heatwaves under different scenarios of climate, 
 population, and adaptation in 82 US communities. *Climatic Change* 
 (In press).
